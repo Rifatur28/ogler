@@ -1,0 +1,176 @@
+:root {
+    --primary-light: #CADCAE;
+    --secondary-light: #E1E9C9;
+    --accent: #EDA35A;
+    --background-light: #FEE8D9;
+    --text-dark: #333333;
+    --background-dark: #2A2A2A;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+    background-color: var(--background-dark);
+    color: var(--secondary-light);
+}
+
+.sidebar {
+    background-color: rgba(42, 42, 42, 0.95);
+    border-right: 1px solid var(--accent);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.neon-text {
+    color: var(--primary-light);
+    text-shadow: 0 0 8px rgba(202, 220, 174, 0.6);
+    font-weight: 600;
+}
+
+.btn-outline-primary {
+    color: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-light);
+    color: var(--text-dark);
+    box-shadow: 0 0 12px rgba(202, 220, 174, 0.7);
+}
+
+.btn-outline-success {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-outline-success:hover {
+    background-color: var(--accent);
+    color: var(--text-dark);
+    box-shadow: 0 0 12px rgba(237, 163, 90, 0.7);
+}
+
+.btn-outline-info {
+    color: var(--secondary-light);
+    border-color: var(--secondary-light);
+}
+
+.btn-outline-info:hover {
+    background-color: var(--secondary-light);
+    color: var(--text-dark);
+    box-shadow: 0 0 12px rgba(225, 233, 201, 0.7);
+}
+
+.task-item {
+    background-color: rgba(50, 50, 50, 0.8);
+    border-left: 3px solid var(--primary-light);
+    margin-bottom: 8px;
+    padding: 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    color: var(--secondary-light);
+}
+
+.task-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 0 15px rgba(202, 220, 174, 0.4);
+}
+
+.task-actions .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+.completed {
+    text-decoration: line-through;
+    opacity: 0.7;
+    border-left-color: var(--accent);
+}
+
+.log-entry {
+    background-color: rgba(60, 60, 60, 0.8);
+    border-left: 3px solid var(--accent);
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    color: var(--secondary-light);
+}
+
+.log-date {
+    color: var(--primary-light);
+    font-weight: bold;
+}
+
+.log-tasks {
+    margin-top: 10px;
+}
+
+.list-group-item {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: var(--secondary-light);
+    border-color: var(--accent);
+    margin-bottom: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: rgba(70, 70, 70, 0.8);
+    border-left: 3px solid var(--primary-light);
+}
+
+.form-control, .form-control:focus {
+    background-color: rgba(50, 50, 50, 0.8);
+    color: var(--secondary-light);
+    border-color: var(--accent);
+}
+
+.card {
+    background-color: rgba(50, 50, 50, 0.8);
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.card-header {
+    background-color: rgba(60, 60, 60, 0.8) !important;
+    border-bottom-color: var(--accent) !important;
+    color: var(--primary-light);
+}
+
+/* Toast Notification */
+.toast-header {
+    background-color: var(--accent) !important;
+    color: var(--text-dark) !important;
+}
+
+.toast-body {
+    background-color: rgba(50, 50, 50, 0.95);
+    color: var(--secondary-light);
+}
+
+/* Animation for new task addition */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(50, 50, 50, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-light);
+}
