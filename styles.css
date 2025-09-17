@@ -14,6 +14,8 @@ body {
     color: var(--secondary-light);
 }
 
+
+
 .sidebar {
     background-color: rgba(42, 42, 42, 0.95);
     border-right: 1px solid var(--accent);
@@ -108,6 +110,8 @@ body {
     background-color: rgba(60, 60, 60, 0.9);
 }
 
+
+
 .task-actions .btn {
     padding: 0.25rem 0.5rem;
 }
@@ -172,7 +176,7 @@ body {
 
 footer {
     border-top: 1px solid var(--accent);
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
     box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
 }
 
