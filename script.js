@@ -7,11 +7,14 @@ $(document).ready(function() {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     $('#currentDate').text(now.toLocaleDateString('en-US', options));
     
+    // Set copyright year
+    $('#currentYear').text(now.getFullYear());
+    
     // Load saved logs from localStorage
     let workLogs = JSON.parse(localStorage.getItem('workLogs')) || [];
     renderLogHistory();
     
-    // Add new task input
+    // Add new task input with animation
     $(document).on('click', '.add-task-btn', function() {
         const taskInput = $(this).siblings('.task-input');
         const taskText = taskInput.val().trim();
@@ -32,8 +35,14 @@ $(document).ready(function() {
                 </div>
             `;
             
-            // Add the task before the input group
+            // Add the task before the input group with animation
             $(this).closest('.input-group').before(taskHtml);
+            
+            // Add pulse animation to the button
+            $(this).addClass('pulse');
+            setTimeout(() => {
+                $(this).removeClass('pulse');
+            }, 1000);
             
             // Clear the input field
             taskInput.val('');
@@ -75,6 +84,10 @@ $(document).ready(function() {
         // Ensure there's exactly one input field
         ensureOneInputField();
         
+        // Clear time tracking fields
+        $('#checkInTime').val('');
+        $('#checkOutTime').val('');
+        
         // Clear late entry fields
         $('#lateEntryTime').val('');
         $('#lateEntryReason').val('');
@@ -84,6 +97,12 @@ $(document).ready(function() {
     
     // Save Log button
     $('#saveLogBtn').click(function() {
+        // Add visual feedback
+        $(this).addClass('pulse');
+        setTimeout(() => {
+            $(this).removeClass('pulse');
+        }, 1000);
+        
         const tasks = [];
         $('.task-item').each(function() {
             tasks.push({
@@ -97,9 +116,17 @@ $(document).ready(function() {
             const lateEntryTime = $('#lateEntryTime').val();
             const lateEntryReason = $('#lateEntryReason').val().trim();
             
+            // Get check-in and check-out times
+            const checkInTime = $('#checkInTime').val();
+            const checkOutTime = $('#checkOutTime').val();
+            
             const logEntry = {
                 date: now.toISOString(),
                 tasks: tasks,
+                timeTracking: {
+                    checkIn: checkInTime,
+                    checkOut: checkOutTime
+                },
                 lateEntry: {
                     time: lateEntryTime,
                     reason: lateEntryReason
@@ -136,12 +163,29 @@ $(document).ready(function() {
     
     // Copy Log button
     $('#copyLogBtn').click(function() {
+        // Add visual feedback
+        $(this).addClass('pulse');
+        setTimeout(() => {
+            $(this).removeClass('pulse');
+        }, 1000);
+        
         const previewHtml = $('#logPreview').html();
         const tempTextarea = $('<textarea>');
         $('body').append(tempTextarea);
         
         // Create plain text version for copying
         let plainText = `🗒️ Work Log - ${now.toLocaleDateString('en-US', options)}\n\n`;
+        
+        // Add check-in and check-out times if available
+        const checkInTime = $('#checkInTime').val();
+        const checkOutTime = $('#checkOutTime').val();
+        
+        if (checkInTime || checkOutTime) {
+            plainText += `⏰ TIME TRACKING\n`;
+            if (checkInTime) plainText += `Check-In: ${checkInTime}\n`;
+            if (checkOutTime) plainText += `Check-Out: ${checkOutTime}\n`;
+            plainText += `\n`;
+        }
         
         // Add late entry information if available
         const lateEntryTime = $('#lateEntryTime').val();
@@ -204,6 +248,15 @@ $(document).ready(function() {
             // Ensure there's exactly one input field
             ensureOneInputField();
             
+            // Load time tracking information if available
+            if (logEntry.timeTracking) {
+                $('#checkInTime').val(logEntry.timeTracking.checkIn || '');
+                $('#checkOutTime').val(logEntry.timeTracking.checkOut || '');
+            } else {
+                $('#checkInTime').val('');
+                $('#checkOutTime').val('');
+            }
+            
             // Load late entry information if available
             if (logEntry.lateEntry) {
                 $('#lateEntryTime').val(logEntry.lateEntry.time || '');
@@ -232,6 +285,13 @@ $(document).ready(function() {
         setTimeout(() => {
             $('.toast-header').removeClass('bg-warning').addClass('bg-success');
         }, 3000);
+    });
+    
+    // Toggle log history view (Show All/Show Less)
+    $(document).on('click', '#toggleLogHistoryBtn', function() {
+        const action = $(this).data('action');
+        const showAll = action === 'showAll';
+        renderLogHistory(showAll);
     });
     
     // Ensure there's exactly one input field in the task container
@@ -265,6 +325,11 @@ $(document).ready(function() {
             ensureOneInputField();
         }
         
+        // Get time tracking information
+        const checkInTime = $('#checkInTime').val();
+        const checkOutTime = $('#checkOutTime').val();
+        const hasTimeTracking = checkInTime || checkOutTime;
+        
         // Get late entry information
         const lateEntryTime = $('#lateEntryTime').val();
         const lateEntryReason = $('#lateEntryReason').val().trim();
@@ -275,6 +340,24 @@ $(document).ready(function() {
                 <div class="log-entry">
                     <div class="log-date">${now.toLocaleDateString('en-US', options)}</div>
                     `;
+                    
+            // Add time tracking information if available
+            if (hasTimeTracking) {
+                previewHtml += `
+                    <div class="time-tracking-info mt-2 mb-3">
+                        <div class="text-info"><i class="bi bi-clock"></i> <strong>Time Tracking</strong></div>
+                        `;
+                        
+                if (checkInTime) {
+                    previewHtml += `<div>Check-In: ${checkInTime}</div>`;
+                }
+                
+                if (checkOutTime) {
+                    previewHtml += `<div>Check-Out: ${checkOutTime}</div>`;
+                }
+                
+                previewHtml += `</div>`;
+            }
                     
             // Add late entry information if available
             if (hasLateEntry) {
@@ -326,7 +409,7 @@ $(document).ready(function() {
     }
     
     // Render log history
-    function renderLogHistory() {
+    function renderLogHistory(showAll = false) {
         $('#logHistory').empty();
         
         if (workLogs.length === 0) {
@@ -338,7 +421,10 @@ $(document).ready(function() {
             return;
         }
         
-        workLogs.forEach(log => {
+        // Determine how many logs to show
+        const logsToShow = showAll ? workLogs : workLogs.slice(0, 10);
+        
+        logsToShow.forEach(log => {
             const logDate = new Date(log.date);
             const dateStr = logDate.toLocaleDateString('en-US', options);
             const taskCount = log.tasks.length;
@@ -347,12 +433,16 @@ $(document).ready(function() {
             // Check if log has late entry information
             const hasLateEntry = log.lateEntry && (log.lateEntry.time || log.lateEntry.reason);
             
+            // Check if log has time tracking information
+            const hasTimeTracking = log.timeTracking && (log.timeTracking.checkIn || log.timeTracking.checkOut);
+            
             $('#logHistory').append(`
                 <div class="list-group-item log-history-item" data-log-id="${log.date}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <strong>${dateStr}</strong>
-                            ${hasLateEntry ? '<span class="ms-2 badge bg-warning text-dark"><i class="bi bi-clock-history"></i> Late</span>' : ''}<br>
+                            ${hasLateEntry ? '<span class="ms-2 badge bg-warning text-dark"><i class="bi bi-clock-history"></i> Late</span>' : ''}
+                            ${hasTimeTracking ? '<span class="ms-2 badge bg-info text-dark"><i class="bi bi-clock"></i> Time</span>' : ''}<br>
                             <small>${completedCount}/${taskCount} tasks completed</small>
                         </div>
                         <button class="btn btn-sm btn-outline-danger delete-log">
@@ -362,5 +452,19 @@ $(document).ready(function() {
                 </div>
             `);
         });
+        
+        // Add Show All/Show Less button if there are more than 10 logs
+        if (workLogs.length > 10) {
+            const buttonText = showAll ? 'Show Less' : 'Show All';
+            const buttonAction = showAll ? 'showLess' : 'showAll';
+            
+            $('#logHistory').append(`
+                <div class="text-center mt-2">
+                    <button id="toggleLogHistoryBtn" class="btn btn-sm btn-outline-secondary" data-action="${buttonAction}">
+                        ${buttonText} (${workLogs.length} total)
+                    </button>
+                </div>
+            `);
+        }
     }
 });

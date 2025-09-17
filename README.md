@@ -5,7 +5,9 @@
 - **Beautiful Log Preview** that's ready to share
 - **Persistent Storage** - your logs are saved between sessions
 - **Responsive Design** works perfectly on all devices
+- **Time Tracking** - record check-in and check-out times
 - **Late Entry Support** - add time-stamped late entries with reasons
+- **Streamlined History** - view recent logs with option to see all
 
 ## 🚀 How to Use
 
@@ -30,13 +32,22 @@
    - Paste into project management tools  
    - Share with your team
 
-### 5. Accessing History
+### 5. Time Tracking
+⏰ **Record your work hours**:  
+   - Set your check-in time when you start working  
+   - Set your check-out time when you finish  
+   - Times are saved with your log and displayed in the preview
+
+### 6. Accessing History
 ⏳ **Browse previous logs** in the sidebar:  
+   - See the 10 most recent logs by default  
+   - Use the "Show All" button to view your complete history  
    - See completion statistics at a glance  
+   - View badges for logs with time tracking or late entries  
    - Click any date to load that day's tasks  
    - 🗑️ Delete old logs when no longer needed
 
-### 6. Late Entry Support
+### 7. Late Entry Support
 ⏰ **Add late entries** when logging tasks after the fact:  
    - Specify the time of the late entry  
    - Add a reason for the late submission  

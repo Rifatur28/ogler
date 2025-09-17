@@ -20,12 +20,39 @@ body {
     height: 100vh;
     position: sticky;
     top: 0;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.3);
+    padding-top: 1rem;
 }
 
 .neon-text {
     color: var(--primary-light);
     text-shadow: 0 0 8px rgba(202, 220, 174, 0.6);
     font-weight: 600;
+}
+
+.btn {
+    transition: all 0.3s ease;
+    border-width: 2px;
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: width 0.3s ease;
+    z-index: -1;
+}
+
+.btn:hover::after {
+    width: 100%;
 }
 
 .btn-outline-primary {
@@ -37,6 +64,7 @@ body {
     background-color: var(--primary-light);
     color: var(--text-dark);
     box-shadow: 0 0 12px rgba(202, 220, 174, 0.7);
+    transform: translateY(-2px);
 }
 
 .btn-outline-success {
@@ -48,6 +76,7 @@ body {
     background-color: var(--accent);
     color: var(--text-dark);
     box-shadow: 0 0 12px rgba(237, 163, 90, 0.7);
+    transform: translateY(-2px);
 }
 
 .btn-outline-info {
@@ -59,21 +88,24 @@ body {
     background-color: var(--secondary-light);
     color: var(--text-dark);
     box-shadow: 0 0 12px rgba(225, 233, 201, 0.7);
+    transform: translateY(-2px);
 }
 
 .task-item {
     background-color: rgba(50, 50, 50, 0.8);
     border-left: 3px solid var(--primary-light);
-    margin-bottom: 8px;
-    padding: 10px;
-    border-radius: 4px;
+    margin-bottom: 12px;
+    padding: 12px 15px;
+    border-radius: 6px;
     transition: all 0.3s ease;
     color: var(--secondary-light);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .task-item:hover {
     transform: translateX(5px);
     box-shadow: 0 0 15px rgba(202, 220, 174, 0.4);
+    background-color: rgba(60, 60, 60, 0.9);
 }
 
 .task-actions .btn {
@@ -108,26 +140,53 @@ body {
     background-color: rgba(50, 50, 50, 0.8);
     color: var(--secondary-light);
     border-color: var(--accent);
-    margin-bottom: 5px;
+    margin-bottom: 8px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    padding: 10px 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .list-group-item:hover {
-    background-color: rgba(70, 70, 70, 0.8);
+    background-color: rgba(70, 70, 70, 0.9);
     border-left: 3px solid var(--primary-light);
+    transform: translateX(3px);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .form-control, .form-control:focus {
     background-color: rgba(50, 50, 50, 0.8);
     color: var(--secondary-light);
     border-color: var(--accent);
+    border-width: 2px;
+    border-radius: 6px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(237, 163, 90, 0.25);
+    background-color: rgba(60, 60, 60, 0.9);
+}
+
+footer {
+    border-top: 1px solid var(--accent);
+    margin-top: 2rem;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .card {
     background-color: rgba(50, 50, 50, 0.8);
     border-color: var(--accent);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.6);
 }
 
 .card-header {
@@ -147,14 +206,39 @@ body {
     color: var(--secondary-light);
 }
 
-/* Animation for new task addition */
+/* Animations and transitions */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 .fade-in {
     animation: fadeIn 0.3s ease-out;
+}
+
+.pulse {
+    animation: pulse 1.5s infinite;
+}
+
+/* Smooth transitions for all elements */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+}
+
+/* Card transition effects */
+.card-header h5 {
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.card:hover .card-header h5 {
+    transform: translateX(5px);
+    text-shadow: 0 0 10px rgba(202, 220, 174, 0.8);
 }
 
 /* Scrollbar styling */
