@@ -32,8 +32,13 @@ $(document).ready(function() {
                 </div>
             `;
             
-            $(this).closest('.input-group').after(taskHtml);
+            // Add the task before the input group
+            $(this).closest('.input-group').before(taskHtml);
+            
+            // Clear the input field
             taskInput.val('');
+            
+            // Update the preview
             updateLogPreview();
         }
     });
@@ -64,15 +69,16 @@ $(document).ready(function() {
     
     // New Log button
     $('#newLogBtn').click(function() {
+        // Clear all tasks
         $('#taskContainer').find('.task-item').remove();
-        $('#taskContainer').append(`
-            <div class="input-group mb-3">
-                <input type="text" class="form-control bg-dark text-light border-secondary task-input" placeholder="Add a new task...">
-                <button class="btn btn-outline-primary add-task-btn" type="button">
-                    <i class="bi bi-plus"></i>
-                </button>
-            </div>
-        `);
+        
+        // Ensure there's exactly one input field
+        ensureOneInputField();
+        
+        // Clear late entry fields
+        $('#lateEntryTime').val('');
+        $('#lateEntryReason').val('');
+        
         updateLogPreview();
     });
     
@@ -87,9 +93,17 @@ $(document).ready(function() {
         });
         
         if (tasks.length > 0) {
+            // Get late entry information
+            const lateEntryTime = $('#lateEntryTime').val();
+            const lateEntryReason = $('#lateEntryReason').val().trim();
+            
             const logEntry = {
                 date: now.toISOString(),
-                tasks: tasks
+                tasks: tasks,
+                lateEntry: {
+                    time: lateEntryTime,
+                    reason: lateEntryReason
+                }
             };
             
             // Check if today's log already exists
@@ -128,6 +142,23 @@ $(document).ready(function() {
         
         // Create plain text version for copying
         let plainText = `🗒️ Work Log - ${now.toLocaleDateString('en-US', options)}\n\n`;
+        
+        // Add late entry information if available
+        const lateEntryTime = $('#lateEntryTime').val();
+        const lateEntryReason = $('#lateEntryReason').val().trim();
+        
+        if (lateEntryTime || lateEntryReason) {
+            plainText += `⏰ LATE ENTRY\n`;
+            if (lateEntryTime) {
+                plainText += `Time: ${lateEntryTime}\n`;
+            }
+            if (lateEntryReason) {
+                plainText += `Reason: ${lateEntryReason}\n`;
+            }
+            plainText += `\n`;
+        }
+        
+        // Add tasks
         $('.task-item').each(function() {
             const isCompleted = $(this).find('.task-checkbox').is(':checked');
             const taskText = $(this).find('.task-label').text();
@@ -148,8 +179,8 @@ $(document).ready(function() {
         const logEntry = workLogs.find(log => log.date === logId);
         
         if (logEntry) {
-            // Clear current tasks
-            $('#taskContainer').find('.task-item').remove();
+            // Clear all content in task container
+            $('#taskContainer').empty();
             
             // Add tasks from history
             logEntry.tasks.forEach(task => {
@@ -170,15 +201,18 @@ $(document).ready(function() {
                 $('#taskContainer').append(taskHtml);
             });
             
-            // Add new task input at the bottom
-            $('#taskContainer').append(`
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control bg-dark text-light border-secondary task-input" placeholder="Add a new task...">
-                    <button class="btn btn-outline-primary add-task-btn" type="button">
-                        <i class="bi bi-plus"></i>
-                    </button>
-                </div>
-            `);
+            // Ensure there's exactly one input field
+            ensureOneInputField();
+            
+            // Load late entry information if available
+            if (logEntry.lateEntry) {
+                $('#lateEntryTime').val(logEntry.lateEntry.time || '');
+                $('#lateEntryReason').val(logEntry.lateEntry.reason || '');
+            } else {
+                // Clear late entry fields
+                $('#lateEntryTime').val('');
+                $('#lateEntryReason').val('');
+            }
             
             updateLogPreview();
         }
@@ -200,6 +234,22 @@ $(document).ready(function() {
         }, 3000);
     });
     
+    // Ensure there's exactly one input field in the task container
+    function ensureOneInputField() {
+        // Remove all existing input groups
+        $('#taskContainer .input-group').remove();
+        
+        // Add a single input group at the end
+        $('#taskContainer').append(`
+            <div class="input-group mb-3">
+                <input type="text" class="form-control bg-dark text-light border-secondary task-input" placeholder="Add a new task...">
+                <button class="btn btn-outline-primary add-task-btn" type="button">
+                    <i class="bi bi-plus"></i>
+                </button>
+            </div>
+        `);
+    }
+    
     // Update log preview
     function updateLogPreview() {
         const tasks = [];
@@ -210,10 +260,41 @@ $(document).ready(function() {
             });
         });
         
+        // Ensure there's exactly one input field
+        if ($('#taskContainer .input-group').length === 0) {
+            ensureOneInputField();
+        }
+        
+        // Get late entry information
+        const lateEntryTime = $('#lateEntryTime').val();
+        const lateEntryReason = $('#lateEntryReason').val().trim();
+        const hasLateEntry = lateEntryTime || lateEntryReason;
+        
         if (tasks.length > 0) {
             let previewHtml = `
                 <div class="log-entry">
                     <div class="log-date">${now.toLocaleDateString('en-US', options)}</div>
+                    `;
+                    
+            // Add late entry information if available
+            if (hasLateEntry) {
+                previewHtml += `
+                    <div class="late-entry-info mt-2 mb-3">
+                        <div class="text-warning"><i class="bi bi-clock-history"></i> <strong>Late Entry</strong></div>
+                        `;
+                        
+                if (lateEntryTime) {
+                    previewHtml += `<div>Time: ${lateEntryTime}</div>`;
+                }
+                
+                if (lateEntryReason) {
+                    previewHtml += `<div>Reason: ${lateEntryReason}</div>`;
+                }
+                
+                previewHtml += `</div>`;
+            }
+            
+            previewHtml += `
                     <div class="log-tasks">
                         <ul class="list-unstyled">
             `;
@@ -263,11 +344,15 @@ $(document).ready(function() {
             const taskCount = log.tasks.length;
             const completedCount = log.tasks.filter(task => task.completed).length;
             
+            // Check if log has late entry information
+            const hasLateEntry = log.lateEntry && (log.lateEntry.time || log.lateEntry.reason);
+            
             $('#logHistory').append(`
                 <div class="list-group-item log-history-item" data-log-id="${log.date}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>${dateStr}</strong><br>
+                            <strong>${dateStr}</strong>
+                            ${hasLateEntry ? '<span class="ms-2 badge bg-warning text-dark"><i class="bi bi-clock-history"></i> Late</span>' : ''}<br>
                             <small>${completedCount}/${taskCount} tasks completed</small>
                         </div>
                         <button class="btn btn-sm btn-outline-danger delete-log">
